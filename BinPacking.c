@@ -56,54 +56,13 @@ union IMAGE_RESOURCE_DIRECTORY_ENTRY_DirectoryUnion {
     struct IMAGE_RESOURCE_DIRECTORY_ENTRY_DirectoryStruct IMAGE_RESOURCE_DIRECTORY_ENTRY_DirectoryStruct;
 };
 
-typedef struct _s_TryBlockMapEntry _s_TryBlockMapEntry, *P_s_TryBlockMapEntry;
+typedef struct _s_UnwindMapEntry _s_UnwindMapEntry, *P_s_UnwindMapEntry;
 
 typedef int __ehstate_t;
-
-struct _s_TryBlockMapEntry {
-    __ehstate_t tryLow;
-    __ehstate_t tryHigh;
-    __ehstate_t catchHigh;
-    int nCatches;
-    ImageBaseOffset32 dispHandlerArray;
-};
-
-typedef struct _s__RTTIClassHierarchyDescriptor _s__RTTIClassHierarchyDescriptor, *P_s__RTTIClassHierarchyDescriptor;
-
-struct _s__RTTIClassHierarchyDescriptor {
-    dword signature;
-    dword attributes; // bit flags
-    dword numBaseClasses; // number of base classes (i.e. rtti1Count)
-    RTTIBaseClassDescriptor *32 __((image-base-relative)) *32 __((image-base-relative)) pBaseClassArray; // ref to BaseClassArray (RTTI 2)
-};
-
-typedef struct _s_TryBlockMapEntry TryBlockMapEntry;
-
-typedef struct _s_UnwindMapEntry _s_UnwindMapEntry, *P_s_UnwindMapEntry;
 
 struct _s_UnwindMapEntry {
     __ehstate_t toState;
     ImageBaseOffset32 action;
-};
-
-typedef struct _s__RTTICompleteObjectLocator _s__RTTICompleteObjectLocator, *P_s__RTTICompleteObjectLocator;
-
-struct _s__RTTICompleteObjectLocator {
-    dword signature;
-    dword offset; // offset of vbtable within class
-    dword cdOffset; // constructor displacement offset
-    ImageBaseOffset32 pTypeDescriptor; // ref to TypeDescriptor (RTTI 0) for class
-    ImageBaseOffset32 pClassDescriptor; // ref to ClassHierarchyDescriptor (RTTI 3)
-};
-
-typedef struct _s_HandlerType _s_HandlerType, *P_s_HandlerType;
-
-struct _s_HandlerType {
-    uint adjectives;
-    ImageBaseOffset32 dispType;
-    int dispCatchObj;
-    ImageBaseOffset32 dispOfHandler;
-    dword dispFrame;
 };
 
 typedef struct _s_IPToStateMapEntry _s_IPToStateMapEntry, *P_s_IPToStateMapEntry;
@@ -132,11 +91,38 @@ struct CLIENT_ID {
     void * UniqueThread;
 };
 
+typedef struct _s__RTTIClassHierarchyDescriptor _s__RTTIClassHierarchyDescriptor, *P_s__RTTIClassHierarchyDescriptor;
+
 typedef struct _s__RTTIClassHierarchyDescriptor RTTIClassHierarchyDescriptor;
 
-typedef struct _s_FuncInfo _s_FuncInfo, *P_s_FuncInfo;
+struct _s__RTTIClassHierarchyDescriptor {
+    dword signature;
+    dword attributes; // bit flags
+    dword numBaseClasses; // number of base classes (i.e. rtti1Count)
+    RTTIBaseClassDescriptor *32 __((image-base-relative)) *32 __((image-base-relative)) pBaseClassArray; // ref to BaseClassArray (RTTI 2)
+};
 
-typedef struct _s_FuncInfo FuncInfo;
+typedef struct TypeDescriptor TypeDescriptor, *PTypeDescriptor;
+
+struct TypeDescriptor {
+    void * pVFTable;
+    void * spare;
+    char name[0];
+};
+
+typedef struct _s__RTTICompleteObjectLocator _s__RTTICompleteObjectLocator, *P_s__RTTICompleteObjectLocator;
+
+typedef struct _s__RTTICompleteObjectLocator RTTICompleteObjectLocator;
+
+struct _s__RTTICompleteObjectLocator {
+    dword signature;
+    dword offset; // offset of vbtable within class
+    dword cdOffset; // constructor displacement offset
+    ImageBaseOffset32 pTypeDescriptor; // ref to TypeDescriptor (RTTI 0) for class
+    ImageBaseOffset32 pClassDescriptor; // ref to ClassHierarchyDescriptor (RTTI 3)
+};
+
+typedef struct _s_FuncInfo _s_FuncInfo, *P_s_FuncInfo;
 
 struct _s_FuncInfo {
     uint magicNumber_and_bbtFlags;
@@ -151,24 +137,33 @@ struct _s_FuncInfo {
     int EHFlags;
 };
 
-typedef struct TypeDescriptor TypeDescriptor, *PTypeDescriptor;
-
-struct TypeDescriptor {
-    void * pVFTable;
-    void * spare;
-    char name[0];
-};
-
-typedef struct _s__RTTICompleteObjectLocator RTTICompleteObjectLocator;
-
 typedef ulonglong __uint64;
+
+typedef struct _s_HandlerType _s_HandlerType, *P_s_HandlerType;
 
 typedef struct _s_HandlerType HandlerType;
 
-typedef struct exception exception, *Pexception;
-
-struct exception { // PlaceHolder Class Structure
+struct _s_HandlerType {
+    uint adjectives;
+    ImageBaseOffset32 dispType;
+    int dispCatchObj;
+    ImageBaseOffset32 dispOfHandler;
+    dword dispFrame;
 };
+
+typedef struct _s_TryBlockMapEntry _s_TryBlockMapEntry, *P_s_TryBlockMapEntry;
+
+struct _s_TryBlockMapEntry {
+    __ehstate_t tryLow;
+    __ehstate_t tryHigh;
+    __ehstate_t catchHigh;
+    int nCatches;
+    ImageBaseOffset32 dispHandlerArray;
+};
+
+typedef struct _s_TryBlockMapEntry TryBlockMapEntry;
+
+typedef struct _s_FuncInfo FuncInfo;
 
 typedef long LONG;
 
@@ -331,29 +326,45 @@ struct _EXCEPTION_POINTERS {
 
 typedef PTOP_LEVEL_EXCEPTION_FILTER LPTOP_LEVEL_EXCEPTION_FILTER;
 
-typedef union _LARGE_INTEGER _LARGE_INTEGER, *P_LARGE_INTEGER;
+typedef enum _EXCEPTION_DISPOSITION {
+    ExceptionContinueExecution=0,
+    ExceptionContinueSearch=1,
+    ExceptionNestedException=2,
+    ExceptionCollidedUnwind=3
+} _EXCEPTION_DISPOSITION;
 
-typedef struct _struct_19 _struct_19, *P_struct_19;
+typedef enum _EXCEPTION_DISPOSITION EXCEPTION_DISPOSITION;
 
-typedef struct _struct_20 _struct_20, *P_struct_20;
+typedef struct DotNetPdbInfo DotNetPdbInfo, *PDotNetPdbInfo;
 
-struct _struct_20 {
-    DWORD LowPart;
-    LONG HighPart;
+struct DotNetPdbInfo {
+    char signature[4];
+    GUID guid;
+    dword age;
+    char pdbpath[67];
 };
 
-struct _struct_19 {
-    DWORD LowPart;
-    LONG HighPart;
+typedef int PMFN;
+
+typedef struct _s_ThrowInfo _s_ThrowInfo, *P_s_ThrowInfo;
+
+typedef struct _s_ThrowInfo ThrowInfo;
+
+struct _s_ThrowInfo {
+    uint attributes;
+    PMFN pmfnUnwind;
+    int pForwardCompat;
+    int pCatchableTypeArray;
 };
 
-union _LARGE_INTEGER {
-    struct _struct_19 s;
-    struct _struct_20 u;
-    LONGLONG QuadPart;
-};
+typedef ulonglong uintptr_t;
 
-typedef union _LARGE_INTEGER LARGE_INTEGER;
+typedef ulonglong size_t;
+
+typedef struct exception exception, *Pexception;
+
+struct exception { // PlaceHolder Class Structure
+};
 
 typedef struct _RUNTIME_FUNCTION _RUNTIME_FUNCTION, *P_RUNTIME_FUNCTION;
 
@@ -365,19 +376,6 @@ struct _RUNTIME_FUNCTION {
 
 typedef struct _RUNTIME_FUNCTION * PRUNTIME_FUNCTION;
 
-typedef enum _EXCEPTION_DISPOSITION {
-    ExceptionContinueExecution=0,
-    ExceptionContinueSearch=1,
-    ExceptionNestedException=2,
-    ExceptionCollidedUnwind=3
-} _EXCEPTION_DISPOSITION;
-
-typedef enum _EXCEPTION_DISPOSITION EXCEPTION_DISPOSITION;
-
-typedef EXCEPTION_DISPOSITION (EXCEPTION_ROUTINE)(struct _EXCEPTION_RECORD *, PVOID, struct _CONTEXT *, PVOID);
-
-typedef struct _M128A * PM128A;
-
 typedef struct _UNWIND_HISTORY_TABLE_ENTRY _UNWIND_HISTORY_TABLE_ENTRY, *P_UNWIND_HISTORY_TABLE_ENTRY;
 
 typedef struct _UNWIND_HISTORY_TABLE_ENTRY UNWIND_HISTORY_TABLE_ENTRY;
@@ -388,6 +386,8 @@ struct _UNWIND_HISTORY_TABLE_ENTRY {
 };
 
 typedef union _union_61 _union_61, *P_union_61;
+
+typedef struct _M128A * PM128A;
 
 typedef struct _struct_62 _struct_62, *P_struct_62;
 
@@ -445,9 +445,9 @@ union _union_63 {
     struct _struct_64 s;
 };
 
-typedef struct _UNWIND_HISTORY_TABLE _UNWIND_HISTORY_TABLE, *P_UNWIND_HISTORY_TABLE;
+typedef EXCEPTION_DISPOSITION (EXCEPTION_ROUTINE)(struct _EXCEPTION_RECORD *, PVOID, struct _CONTEXT *, PVOID);
 
-typedef struct _UNWIND_HISTORY_TABLE * PUNWIND_HISTORY_TABLE;
+typedef struct _UNWIND_HISTORY_TABLE _UNWIND_HISTORY_TABLE, *P_UNWIND_HISTORY_TABLE;
 
 struct _UNWIND_HISTORY_TABLE {
     DWORD Count;
@@ -460,16 +460,42 @@ struct _UNWIND_HISTORY_TABLE {
     UNWIND_HISTORY_TABLE_ENTRY Entry[12];
 };
 
-typedef void * HANDLE;
-
 typedef struct _KNONVOLATILE_CONTEXT_POINTERS _KNONVOLATILE_CONTEXT_POINTERS, *P_KNONVOLATILE_CONTEXT_POINTERS;
-
-typedef struct _KNONVOLATILE_CONTEXT_POINTERS * PKNONVOLATILE_CONTEXT_POINTERS;
 
 struct _KNONVOLATILE_CONTEXT_POINTERS {
     union _union_61 u;
     union _union_63 u2;
 };
+
+typedef union _LARGE_INTEGER _LARGE_INTEGER, *P_LARGE_INTEGER;
+
+typedef struct _struct_19 _struct_19, *P_struct_19;
+
+typedef struct _struct_20 _struct_20, *P_struct_20;
+
+struct _struct_20 {
+    DWORD LowPart;
+    LONG HighPart;
+};
+
+struct _struct_19 {
+    DWORD LowPart;
+    LONG HighPart;
+};
+
+union _LARGE_INTEGER {
+    struct _struct_19 s;
+    struct _struct_20 u;
+    LONGLONG QuadPart;
+};
+
+typedef union _LARGE_INTEGER LARGE_INTEGER;
+
+typedef struct _UNWIND_HISTORY_TABLE * PUNWIND_HISTORY_TABLE;
+
+typedef void * HANDLE;
+
+typedef struct _KNONVOLATILE_CONTEXT_POINTERS * PKNONVOLATILE_CONTEXT_POINTERS;
 
 typedef EXCEPTION_ROUTINE * PEXCEPTION_ROUTINE;
 
@@ -498,15 +524,6 @@ struct IMAGE_DOS_HEADER {
     byte e_program[64]; // Actual DOS program
 };
 
-typedef struct DotNetPdbInfo DotNetPdbInfo, *PDotNetPdbInfo;
-
-struct DotNetPdbInfo {
-    char signature[4];
-    GUID guid;
-    dword age;
-    char pdbpath[67];
-};
-
 typedef struct _FILETIME _FILETIME, *P_FILETIME;
 
 typedef struct _FILETIME * LPFILETIME;
@@ -518,11 +535,11 @@ struct _FILETIME {
 
 typedef struct HINSTANCE__ HINSTANCE__, *PHINSTANCE__;
 
-typedef struct HINSTANCE__ * HINSTANCE;
-
 struct HINSTANCE__ {
     int unused;
 };
+
+typedef struct HINSTANCE__ * HINSTANCE;
 
 typedef HINSTANCE HMODULE;
 
@@ -832,24 +849,7 @@ struct StringInfo {
     word wType;
 };
 
-typedef int PMFN;
-
-typedef struct _s_ThrowInfo _s_ThrowInfo, *P_s_ThrowInfo;
-
-struct _s_ThrowInfo {
-    uint attributes;
-    PMFN pmfnUnwind;
-    int pForwardCompat;
-    int pCatchableTypeArray;
-};
-
-typedef struct _s_ThrowInfo ThrowInfo;
-
-typedef ulonglong uintptr_t;
-
 typedef int (* _onexit_t)(void);
-
-typedef ulonglong size_t;
 
 
 
