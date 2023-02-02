@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Project">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BuildConfig">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OutputDirectory" type="xs:string" />
+              <xs:element name="SoupOutputDirectory" type="xs:string" />
+              <xs:element name="OutputType" type="xs:string" />
+              <xs:element name="OutputName" type="xs:string" />
+              <xs:element name="WarningLevel" type="xs:unsignedByte" />
+              <xs:element name="LogFile" type="xs:string" />
+              <xs:element name="TilingMode" type="xs:string" />
+              <xs:element name="MaximumAnisotropy" type="xs:unsignedByte" />
+              <xs:element name="CustomPageSize" type="xs:unsignedByte" />
+              <xs:element name="CustomTargetDisk" type="xs:string" />
+              <xs:element name="CustomBlockSize" type="xs:unsignedShort" />
+              <xs:element name="CustomTileWidth" type="xs:unsignedByte" />
+              <xs:element name="CustomTileHeight" type="xs:unsignedByte" />
+              <xs:element name="PagingStrategy" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="LayerConfig">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="LayerDescription">
+                <xs:complexType>
+                  <xs:attribute name="Name" type="xs:string" use="required" />
+                  <xs:attribute name="CompressionFormat" type="xs:string" use="required" />
+                  <xs:attribute name="QualityProfile" type="xs:string" use="required" />
+                  <xs:attribute name="DataType" type="xs:string" use="required" />
+                  <xs:attribute name="DefaultColor" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ImportedAssets">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Asset">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Layers">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="Layer">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Textures">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Texture">
+                                        <xs:complexType>
+                                          <xs:attribute name="Src" type="xs:string" use="required" />
+                                          <xs:attribute name="SubIndex" type="xs:unsignedByte" use="required" />
+                                          <xs:attribute name="Width" type="xs:unsignedShort" use="required" />
+                                          <xs:attribute name="Height" type="xs:unsignedShort" use="required" />
+                                          <xs:attribute name="ArrayIndex" type="xs:unsignedByte" use="required" />
+                                          <xs:attribute name="LastChangeDate" type="xs:string" use="required" />
+                                          <xs:attribute name="NumChannels" type="xs:unsignedByte" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="QualityProfile" type="xs:string" use="required" />
+                              <xs:attribute name="Flip" type="xs:string" use="required" />
+                              <xs:attribute name="TargetWidth" type="xs:unsignedByte" use="required" />
+                              <xs:attribute name="TargetHeight" type="xs:unsignedByte" use="required" />
+                              <xs:attribute name="ResizeMode" type="xs:string" use="required" />
+                              <xs:attribute name="MipSource" type="xs:string" use="required" />
+                              <xs:attribute name="TextureType" type="xs:string" use="required" />
+                              <xs:attribute name="AssetPackingMode" type="xs:string" use="required" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="Name" type="xs:string" use="required" />
+                  <xs:attribute name="GUID" type="xs:string" use="required" />
+                  <xs:attribute name="Width" type="xs:unsignedShort" use="required" />
+                  <xs:attribute name="Height" type="xs:unsignedShort" use="required" />
+                  <xs:attribute name="TargetWidth" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="TargetHeight" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="AutoScalingMode" type="xs:string" use="required" />
+                  <xs:attribute name="TilingMethod" type="xs:string" use="required" />
+                  <xs:attribute name="Type" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="Name" type="xs:string" use="required" />
+      <xs:attribute name="Guid" type="xs:string" use="required" />
+      <xs:attribute name="GrBuildVersion" type="xs:decimal" use="required" />
+      <xs:attribute name="BuildProfile" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
